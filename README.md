@@ -6,14 +6,15 @@ Scripts de scraping dos dados que serão usados no Gestão BR
 ## Preparando o Ambiente de Desenvolvimento
 
 Esse projeto está sendo desenvolvido usando Python 3.5. Veja instruções de
-instalação em seu sistema no site [python.org](http://www.python.org/).
+instalação em seu sistema no site [python.org](http://www.python.org/). Se
+você usa Debian e derivados, basta executar:
+
+    sudo apt-get update && sudo apt-get install -y python3.5
 
 Depois de ter o Python 3.5 instalado, você precisará instalar alguns outros
 pacotes utilizando o gerenciador de pacotes
 [pip](https://pypi.python.org/pypi/pip) (que já é instalado por padrão junto
-com o Python 3.5). Se você usa Debian e derivados, basta executar:
-
-    sudo apt-get install python3.5
+com o Python 3.5).
 
 Para criar o ambiente virtual, clonar o repositório e instalar as dependências
 execute os seguintes comandos:
@@ -27,7 +28,7 @@ execute os seguintes comandos:
 
 Além de todas as dependências você precisará do [driver do Firefox para o
 Selenium](https://github.com/mozilla/geckodriver/releases) (acesse o site e
-veja as instruções de instalação para seu sistema).  Caso seu sistema
+veja as instruções de instalação para seu sistema).
 
 
 ## Executando o Scraper
@@ -63,6 +64,10 @@ formulário do site, a saber:
 
 > Note que caso a `<unidade gestora>` possua espaço você precisará colocar o
 > parâmetro entre aspas na linha de comando.
+
+Exemplo:
+
+    python cli.py 2017 "FUNDO MUNICIPAL DE SAÚDE"
 
 
 ## Metodologia de Trabalho
