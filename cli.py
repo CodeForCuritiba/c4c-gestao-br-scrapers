@@ -17,12 +17,17 @@
 
 import argparse
 
+from pathlib import Path
+
 import rows
 
 import marmeleiro
 
 
 DEFAULT_ENCODING = 'utf-8'
+BASE_PATH = Path(__file__).parent
+HTML_PATH = BASE_PATH.joinpath('data', 'html')
+CSV_PATH = BASE_PATH.joinpath('data', 'csv')
 slug = rows.plugins.utils.slug
 
 
@@ -32,31 +37,41 @@ def main():
     parser.add_argument('unidade_gestora',
                         choices=marmeleiro.crawler.UNIDADES_GESTORAS)
     args = parser.parse_args()
-
     unidade = 'MUNICIPIO DE MARMELEIRO'
+    slug_unidade_gestora = slug(args.unidade_gestora)
 
-    # Faz download de todas as páginas para essa busca
+    HTML_PATH.mkdir(parents=True, exist_ok=True)
+    CSV_PATH.mkdir(parents=True, exist_ok=True)
+
+    print('Downloading data...', end='', flush=True)
     htmls = marmeleiro.crawler.busca_licitacoes(
             'MUNICIPIO DE MARMELEIRO', args.ano, args.unidade_gestora)
     htmls = [html.encode(DEFAULT_ENCODING) for html in htmls]
+    print(' done.')
 
-    # Salva os HTMLs de cada página, exemplo:
-    # `licitacoes-2017-CONSOLIDADA-pagina-001.html`
+    print('Saving downloaded HTMLs on filesystem...', end='', flush=True)
     for number, html in enumerate(htmls, start=1):
-        filename = 'licitacoes-{}-{}-pagina-{:03d}.html'.format(
-                args.ano, args.unidade_gestora, number)
-        with open(filename, mode='wb') as fobj:
+        filepath = HTML_PATH.joinpath(
+                'licitacoes-{}-{}-pagina-{:03d}.html'.format(
+                    args.ano, slug_unidade_gestora, number))
+        with filepath.open(mode='wb') as fobj:
             fobj.write(html)
+    print(' done.')
 
-    # Extrai a informação desejada dos HTMLs e salva o resultado final em CSV
+    print('Extracting desired data...', end='', flush=True)
     data = []
     for html in htmls:
         table = marmeleiro.parser.extrai_tabela(html,
                                                 encoding=DEFAULT_ENCODING)
         data.extend([row._asdict() for row in table])
+    print(' done.')
+
+    print('Exporting to a single CSV...', end='', flush=True)
     final = rows.import_from_dicts(data)
-    arquivo = 'licitacoes-{}-{}.csv'.format(args.ano, args.unidade_gestora)
-    rows.export_to_csv(final, arquivo)
+    filepath = CSV_PATH.joinpath('licitacoes-{}-{}.csv'
+                                 .format(args.ano, slug_unidade_gestora))
+    rows.export_to_csv(final, str(filepath))
+    print(' done.')
 
 
 if __name__ == '__main__':
