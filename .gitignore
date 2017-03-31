@@ -5,6 +5,7 @@
 .coverage
 .directory
 .env
+data
 .idea/*
 .tox
 MANIFEST
@@ -12,3 +13,4 @@ build/*
 dist/*
 reg_settings.py
 .DS_Store
+geckodriver.log
